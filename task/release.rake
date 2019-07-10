@@ -4,9 +4,11 @@ require "bundler/gem_tasks"
 task :build => ["build_metadata"] do
   Rake::Task["build_metadata:clean"].tap(&:reenable).real_invoke
 end
-task :release => ["release:verify_files", "release:verify_github", "build_metadata"]
+task :release => ["release:verify_docs", "release:verify_files", "release:verify_github", "build_metadata"]
 
 namespace :release do
+  task :verify_docs => :"man:check"
+
   task :verify_files do
     git_list = IO.popen("git ls-files -z", &:read).split("\x0").select {|f| f.match(%r{^(lib|man|exe)/}) }
     git_list += %w[CHANGELOG.md LICENSE.md README.md bundler.gemspec]
